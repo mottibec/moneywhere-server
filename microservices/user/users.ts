@@ -2,12 +2,12 @@ import { user } from "../../models/user";
 
 export default class Users {
     async getUser(id: string) {
-        return await findUserById(id);
+        throw new Error("Method not implemented.");
     }
     async updateUser(user: user) {
-        await updateUser(user);
+        throw new Error("Method not implemented.");
     }
     async deleteUser(id: string) {
-        await deleteUser(id);
+        throw new Error("Method not implemented.");
     }
 }
