@@ -1,14 +1,17 @@
 ﻿import { Request, Response, Router } from "express";
 import { UserRepository } from "../database/UserRepository";
 import { UserLocationService } from "../services/userLocation"
-import TransactionService from "../services/transactionService";
+import { TYPES } from "../inversify.types";
+import { inject } from "inversify";
+import { ITransactionService } from "../services/interfaces/ITransactionService";
 
 export default class UserController {
     public router: Router;
     public route: string = "/user";
     private userRepository: UserRepository = new UserRepository();
     private locationService: UserLocationService = new UserLocationService();
-    private transactionService: TransactionService = new TransactionService();
+    @inject(TYPES.ITransactionService)
+    private transactionService!: ITransactionService;
 
     constructor() {
         this.router = Router();
