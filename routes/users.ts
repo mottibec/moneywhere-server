@@ -1,4 +1,4 @@
-﻿import { Request, Response, Router } from "express";
+﻿import { Request, Response } from "express";
 import IController from "./IController";
 import { UserRepository } from "../database/UserRepository";
 import { UserLocationService } from "../services/userLocation"
@@ -10,17 +10,13 @@ import "reflect-metadata";
 
 @injectable()
 export default class UserController implements IController {
-    public router: Router;
     public route: string = "/user";
     private userRepository: UserRepository = new UserRepository();
     private locationService: UserLocationService = new UserLocationService();
 
     @inject(TYPES.IWebServer) private _webServer!: IWebServer;
     @inject(TYPES.ITransactionService) private _transactionService!: ITransactionService;
-
-    constructor() {
-        this.router = Router();
-    }
+    
     initRoutes() {
         this._webServer.registerGet(this.route, (request: Request, response: Response) => this.getUsers(request, response));
         this._webServer.registerGet(`${this.route}/:id`, (request: Request, response: Response) => this.getUser(request, response));
@@ -28,7 +24,6 @@ export default class UserController implements IController {
         this._webServer.registerPost(this.route, (request: Request, response: Response) => this.createUser(request, response));
         this._webServer.registerPost(`${this.route}/:id/rate`, (request: Request, response: Response) => this.rateUser(request, response));
         this._webServer.registerPost(`${this.route}/ping`, (request: Request, response: Response) => this.pingUser(request, response));
-        this.router = this._webServer.getRouter();
     }
     async getUsers(request: Request, response: Response) {
         let result = await this.userRepository._items;

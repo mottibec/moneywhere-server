@@ -1,27 +1,22 @@
-import express from "express";
 import IController from "./routes/IController";
+import { IWebServer } from "./webserver/IWebServer";
 
 class App {
-    public app: express.Application;
-    private port: number;
+    private _webServer: IWebServer;
 
-    constructor(controllers: IController[], port: number) {
-        this.app = express();
-        this.port = port;
+    constructor(webServer: IWebServer, controllers: IController[]) {
+        this._webServer = webServer;
         this.configRoutes(controllers);
     }
     configRoutes(controllers: IController[]) {
         controllers.forEach((controller) => {
             controller.initRoutes();
-            console.log(`'${controller.route}' registered with ${controller.router.stack.length} routes`);
-            this.app.use('/', controller.router);
+            console.log(`'${controller.route}' registered`);
         });
     }
-    public listen() {
-        const port = this.port;
-        this.app.listen(port, function () {
-            console.log(`app is listing on port ${port}`);
-        });
+    public start(port: number) {
+        this._webServer.start(port, () => `app is listing on port ${port}`);
+        console.log("done");
     }
 }
 

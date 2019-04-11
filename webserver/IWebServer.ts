@@ -3,5 +3,5 @@ export interface IWebServer {
     
     registerPost(routeTemplate: string, callback: Function): void;
 
-    getRouter(): any;
+    start(port: number, callback: Function): void;
 }

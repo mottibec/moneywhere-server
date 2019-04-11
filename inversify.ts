@@ -11,21 +11,30 @@ import { IWebServer } from "./webserver/IWebServer";
 import ExpressWebServer from "./webserver/ExpressWebServer";
 import IController from "./routes/IController";
 import UserController from "./routes/users";
+import TransactionController from "./routes/transactions";
 
 
 const container = new Container();
 
 //web server
-container.bind<IWebServer>(TYPES.IWebServer).to(ExpressWebServer);
+container.bind<IWebServer>(TYPES.IWebServer)
+    .to(ExpressWebServer)
+    .inSingletonScope();
 
 //services
-container.bind<ITransactionService>(TYPES.ITransactionService).to(TransactionService);
-container.bind<ILiveLocation>(TYPES.ILiveLocation).to(LiveLocationService);
-container.bind<IUserLocationService>(TYPES.IUserLocationService).to(UserLocationService);
-container.bind<IController>(TYPES.IController).to(UserController);
+container.bind<ITransactionService>(TYPES.ITransactionService)
+    .to(TransactionService);
+container.bind<ILiveLocation>(TYPES.ILiveLocation)
+    .to(LiveLocationService);
+container.bind<IUserLocationService>(TYPES.IUserLocationService)
+    .to(UserLocationService);
 
 //controllers
+container.bind<IController>(TYPES.IController)
+    .to(UserController);
 
+container.bind<IController>(TYPES.IController)
+    .to(TransactionController)
 
 
 export { container };  

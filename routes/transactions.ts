@@ -1,20 +1,26 @@
-import { Request, Response, Router, NextFunction } from "express";
+import { Request, Response } from "express";
 import { TransactionRepository } from "../database/TransactionRepository";
-import { request } from "http";
 import IController from "./IController";
+import { injectable, inject } from "inversify";
+import { IWebServer } from "../webserver/IWebServer";
+import { TYPES } from "../inversify.types";
 
+@injectable()
 export default class TransactionController implements IController {
-   public router: Router;
    public route: string = "/transaction";
    public transactionRepository: TransactionRepository;
 
+   @inject(TYPES.IWebServer) private _webServer!: IWebServer;
    constructor() {
       this.transactionRepository = new TransactionRepository();
-      this.router = Router();
-      this.initRoutes();
    }
    initRoutes() {
-      this.router.get(`${this.route}/:userId`, (request: Request, response: Response) => this.getTransactionHistory(request, response));
+      this._webServer.registerGet(this.route, (request: Request, response: Response) => this.getAll(request, response));
+      this._webServer.registerGet(`${this.route}/:userId`, (request: Request, response: Response) => this.getTransactionHistory(request, response));
+   }
+   getAll(request: Request, response: Response) {
+      var items = this.transactionRepository._items;
+      response.send(items);
    }
    async getTransactionHistory(request: Request, response: Response) {
       const userId = request.params.userId;

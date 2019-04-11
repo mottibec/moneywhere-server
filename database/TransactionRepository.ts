@@ -3,7 +3,6 @@ import { transaction } from "../models/transaction";
 
 export class TransactionRepository extends BaseRepository<transaction> {
     constructor() {
-        console.log("TransactionRepository");
         super();
         this._items = [
             {
