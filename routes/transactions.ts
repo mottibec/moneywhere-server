@@ -15,7 +15,12 @@ export default class TransactionController implements IController {
       this.transactionRepository = new TransactionRepository();
    }
    initRoutes() {
-      //this._webServer.registerGet(`${this.route}/:userId`, (request: Request, response: Response) => this.getTransactionHistory(request, response));
+      this._webServer.registerGet(this.route, (request: Request, response: Response) => this.getAll(request, response));
+      this._webServer.registerGet(`${this.route}/:userId`, (request: Request, response: Response) => this.getTransactionHistory(request, response));
+   }
+   getAll(request: Request, response: Response) {
+      var items = this.transactionRepository._items;
+      response.send(items);
    }
    async getTransactionHistory(request: Request, response: Response) {
       const userId = request.params.userId;

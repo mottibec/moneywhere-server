@@ -13,9 +13,8 @@ export default class ExpressWebServer implements IWebServer {
         this._router = Router();
     }
     start(port: number, callback: Function) {
-        console.log(this._router.stack.length);
         this._app.use('/', this._router);
-        this._app.listen(port, callback());
+        this._app.listen(port, callback);
     }
 
     registerGet(routeTemplate: string, callback: Function): void {
