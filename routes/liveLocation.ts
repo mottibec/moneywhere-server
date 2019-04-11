@@ -1,19 +1,27 @@
 import socketIo from "socket.io";
+import { Router } from "express";
 import { createServer, Server } from 'http';
 import { location } from "../models/location";
+import IController from "./IController";
 
-export default class LiveLocationController {
+export default class LiveLocationController implements IController {
+    route: string;
+    router: Router;
     private io: socketIo.Server;
     private server: Server;
     private trackedUsers: [string, string, socketIo.Socket][];
 
     constructor() {
+        this.route = "";
         this.server = createServer();
+        this.router = Router();;
         this.io = socketIo(this.server);
         this.trackedUsers = [];
         this.connect();
     }
-
+    initRoutes(): void {
+        throw new Error("Method not implemented.");
+    }
     connect() {
         this.io.on('connection', this.onConnection);
     }

@@ -1,8 +1,12 @@
 import { location } from "../models/location";
 import { user } from "../models/user";
 import { UserRepository } from "../database/UserRepository";
+import { IUserLocationService } from "./interfaces/IUserLocationService";
+import { injectable, inject } from "inversify";
+import "reflect-metadata";
 
-export class UserLocationService {
+@injectable()
+export class UserLocationService implements IUserLocationService  {
     private _userRepository: UserRepository = new UserRepository();
 
     private locations = [

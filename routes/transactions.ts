@@ -1,8 +1,9 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { TransactionRepository } from "../database/TransactionRepository";
 import { request } from "http";
+import IController from "./IController";
 
-export default class TransactionController {
+export default class TransactionController implements IController {
    public router: Router;
    public route: string = "/transaction";
    public transactionRepository: TransactionRepository;

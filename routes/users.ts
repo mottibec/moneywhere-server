@@ -1,28 +1,38 @@
 ﻿import { Request, Response, Router } from "express";
+import IController from "./IController";
 import { UserRepository } from "../database/UserRepository";
 import { UserLocationService } from "../services/userLocation"
 import { TYPES } from "../inversify.types";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { ITransactionService } from "../services/interfaces/ITransactionService";
+import { IWebServer } from "../webserver/IWebServer";
+import "reflect-metadata";
 
-export default class UserController {
+@injectable()
+export default class UserController implements IController {
     public router: Router;
     public route: string = "/user";
     private userRepository: UserRepository = new UserRepository();
     private locationService: UserLocationService = new UserLocationService();
-    @inject(TYPES.ITransactionService)
-    private transactionService!: ITransactionService;
+
+    @inject(TYPES.IWebServer) private _webServer!: IWebServer;
+    @inject(TYPES.ITransactionService) private _transactionService!: ITransactionService;
 
     constructor() {
         this.router = Router();
-        this.initRoutes();
     }
     initRoutes() {
-        this.router.get(`${this.route}/:id`, (request: Request, response: Response) => this.getUser(request, response));
-        this.router.get(`${this.route}/:location`, (request: Request, response: Response) => this.getUsersByLocation(request, response));
-        this.router.post(this.route, (request: Request, response: Response) => this.createUser(request, response));
-        this.router.post(`${this.route}/:id/rate`, (request: Request, response: Response) => this.rateUser(request, response));
-        this.router.post(`${this.route}/ping`, (request: Request, response: Response) => this.pingUser(request, response));
+        this._webServer.registerGet(this.route, (request: Request, response: Response) => this.getUsers(request, response));
+        this._webServer.registerGet(`${this.route}/:id`, (request: Request, response: Response) => this.getUser(request, response));
+        this._webServer.registerGet(`${this.route}/:location`, (request: Request, response: Response) => this.getUsersByLocation(request, response));
+        this._webServer.registerPost(this.route, (request: Request, response: Response) => this.createUser(request, response));
+        this._webServer.registerPost(`${this.route}/:id/rate`, (request: Request, response: Response) => this.rateUser(request, response));
+        this._webServer.registerPost(`${this.route}/ping`, (request: Request, response: Response) => this.pingUser(request, response));
+        this.router = this._webServer.getRouter();
+    }
+    async getUsers(request: Request, response: Response) {
+        let result = await this.userRepository._items;
+        response.send(result);
     }
     async createUser(request: Request, response: Response) {
         let user = request.body.user;
@@ -51,7 +61,7 @@ export default class UserController {
     }
     async pingUser(request: Request, response: Response) {
         let user = request.body.userId;
-        await this.transactionService.pingUser(user);
+        await this._transactionService.pingUser(user);
         response.send(200);
     }
 }
