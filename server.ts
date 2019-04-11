@@ -1,17 +1,12 @@
 import App from "./app";
-import TransactionController from "./routes/transactions";
 import { container } from "./inversify";
 import { TYPES } from "./inversify.types";
 import IController from "./routes/IController";
-import "reflect-metadata";
+import { IWebServer } from "./webserver/IWebServer";
 
 const port = + (process.env["PORT"] || "3000");
 
-
-const userController = container.get<IController>(TYPES.IController);
-
-const app = new App([
-    userController,
-    new TransactionController()]
-    , port);
-app.listen();
+var controllers = container.getAll<IController>(TYPES.IController)
+var webServer = container.get<IWebServer>(TYPES.IWebServer);
+const app = new App(webServer, controllers);
+app.start(port);
