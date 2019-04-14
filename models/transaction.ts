@@ -1,5 +1,3 @@
-import { user } from "./user";
-
 export interface transaction {
     id: string;
     fromUser: string;

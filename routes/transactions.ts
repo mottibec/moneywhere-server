@@ -4,13 +4,14 @@ import { injectable, inject } from "inversify";
 import { IWebServer } from "../webserver/IWebServer";
 import { TYPES } from "../inversify.types";
 import { IRequest, IResponse } from "../webserver/IWebRequest";
+import TransactionService from "../services/transactionService";
 
 @injectable()
 export default class TransactionController implements IController {
    public route: string = "/transaction";
 
-   @inject(TYPES.TransactionRepository)
-   private _transactionRepository!: TransactionRepository;
+   @inject(TYPES.TransactionService)
+   private _transactionService!: TransactionService;
 
    @inject(TYPES.IWebServer)
    private _webServer!: IWebServer;
@@ -20,17 +21,12 @@ export default class TransactionController implements IController {
       this._webServer.registerGet(`${this.route}/:userId`, (request: IRequest, response: IResponse) => this.getTransactionHistory(request, response));
    }
    getAll(request: IRequest, response: IResponse) {
-      var items = this._transactionRepository._items;
+      var items = this._transactionService.GetAll();
       response.send(items);
    }
    async getTransactionHistory(request: IRequest, response: IResponse) {
       const userId = request.params.userId;
-      try {
-         let transactions = await this._transactionRepository.findByUser(userId);
-         response.send(transactions);
-      }
-      catch (err) {
-         console.log(err);
-      }
+      let transactions = await this._transactionService.getUserTransactions(userId);
+      response.send(transactions);
    }
 }

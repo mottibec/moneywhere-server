@@ -1,7 +1,7 @@
 import socketIo from "socket.io";
 import { Router } from "express";
 import { createServer, Server } from 'http';
-import { location } from "../models/location";
+import { Location } from "../models/location";
 import IController from "./IController";
 
 export default class LiveLocationController implements IController {
@@ -33,7 +33,7 @@ export default class LiveLocationController implements IController {
     onDisconnect() {
 
     }
-    updateUserLocation(clientSocket: socketIo.Socket, location: location) {
+    updateUserLocation(clientSocket: socketIo.Socket, location: Location) {
         const userRecord = this.trackedUsers.find(item => item[0] === clientSocket.id);
         if (!userRecord) {
             return;

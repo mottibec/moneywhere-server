@@ -1,121 +1,46 @@
-import { location } from "../models/location";
-import { user } from "../models/user";
+import { Location } from "../models/location";
+import { User } from "../models/user";
 import { UserRepository } from "../database/UserRepository";
 import { IUserLocationService } from "./interfaces/IUserLocationService";
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
+import { TYPES } from "../inversify.types";
 
 @injectable()
-export class UserLocationService implements IUserLocationService  {
-    private _userRepository: UserRepository = new UserRepository();
+export class UserLocationService implements IUserLocationService {
 
-    private locations = [
-        {
-            id: "1",
-            location: {
-                latitude: 40.693451,
-                longitude: -73.917007
+    @inject(TYPES.UserRepository)
+    private _userRepository!: UserRepository;
 
-            }
-        },
-        {
-            id: "2",
-            location: {
-                latitude: 40.695839,
-                longitude: -73.921831
-            }
-        },
-        {
-
-            id: "3",
-            location: {
-                latitude: 40.702899,
-                longitude: -73.928379
-            }
-        },
-        {
-            id: "4",
-            location: {
-                latitude: 40.701891,
-                longitude: -73.923305
-            }
-        },
-        {
-            id: "5",
-            location: {
-                latitude: 40.705730,
-                longitude: -73.930383
-            }
-        },
-        {
-
-            id: "6",
-            location: {
-                latitude: 40.7063481,
-                longitude: -73.920817
-            }
-        },
-        {
-            id: "7",
-            location: {
-                latitude: 40.707031,
-                longitude: -73.915112
-            }
-        },
-        {
-
-            id: "8",
-            location: {
-                latitude: 40.708332,
-                longitude: -73.933985
-            }
-        },
-        {
-            id: "9",
-            location: {
-                latitude: 40.709341,
-                longitude: -73.920687
-            }
-        },
-        {
-            id: "10",
-            location: {
-                latitude: 40.706543,
-                longitude: -73.921288
-            }
-        },
-        {
-            id: "11",
-            location: {
-                latitude: 40.693451,
-                longitude: -73.914682
-            }
-        },
-        {
-
-            id: "12",
-            location: {
-                latitude: 40.707128,
-                longitude: -73.921073
-            }
-        },
-        {
-            id: "13",
-            location: {
-                latitude: 40.711976,
-                longitude: -73.912880
-            }
-        }
+    private locations: [string, Location][] = [
+        ["1", new Location(-73.917007, 40.693451)],
+        ["2", new Location(-73.921831, 40.695839)],
+        ["3", new Location(-73.928379, 40.702899)],
+        ["4", new Location(-73.923305, 40.701891)],
+        ["5", new Location(-73.930383, 40.705730)],
+        ["6", new Location(-73.920817, 40.7063481)],
+        ["7", new Location(-73.915112, 40.707031)],
+        ["8", new Location(-73.933985, 40.708332)],
+        ["9", new Location(-73.920687, 40.709341)],
+        ["10", new Location(-73.921288, 40.706543)],
+        ["11", new Location(-73.914682, 40.693451)],
+        ["12", new Location(-73.921073, 40.707128)],
+        ["13", new Location(-70.912880, 40.711976)]
     ]
-    getUsersByLocation(location: location, radius: number): user[] {
+    getUsersByLocation(location: Location, radius: number): User[] {
+        console.log(location);
         let users = this._userRepository._items;
         const userLocatoins = users.map(user => {
-            let userLocation = this.locations.find(location => location.id === user.id);
+            let userLocation = this.locations.find(location => location["0"] === user.id);
             if (userLocation) {
-                user.location = userLocation.location;
+                user.setLocation(userLocation["1"]);
             }
             return user;
         });
-        return userLocatoins;
+        return userLocatoins.filter(user => {
+            var distance = user.location.distanceFrom(location);
+            console.log(distance);
+            return distance <= radius * 1000;
+        });
     }
 }

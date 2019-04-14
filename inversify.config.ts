@@ -14,6 +14,7 @@ import UserController from "./routes/users";
 import TransactionController from "./routes/transactions";
 import { TransactionRepository } from "./database/TransactionRepository";
 import { UserRepository } from "./database/UserRepository";
+import { UserService } from "./services/userService";
 
 
 const container = new Container();
@@ -36,6 +37,10 @@ container.bind<ILiveLocation>(TYPES.ILiveLocation)
     .to(LiveLocationService);
 container.bind<IUserLocationService>(TYPES.IUserLocationService)
     .to(UserLocationService);
+container.bind<UserService>(TYPES.UserService)
+    .to(UserService);
+container.bind<TransactionService>(TYPES.TransactionService)
+    .to(TransactionService);
 
 //controllers
 container.bind<IController>(TYPES.IController)

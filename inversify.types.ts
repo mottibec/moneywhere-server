@@ -7,8 +7,11 @@ const TYPES = {
     TransactionController: Symbol.for("TransactionController"),
     UserController: Symbol.for("UserController"),
     TransactionRepository: Symbol.for("TransactionRepository"),
+    UserRepository: Symbol.for("UserRepository"),
     UserLocationService: Symbol.for("UserLocationService"),
-    UserRepository: Symbol.for("UserRepository")
+    UserService: Symbol.for("UserService"),
+    TransactionService: Symbol.for("TransactionService")
+
 };
 
 export { TYPES };

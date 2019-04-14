@@ -1,11 +1,11 @@
 import { BaseRepository } from "./BaseRepository ";
-import { balance } from "../models/balance";
+import { Balance } from "../models/balance";
 
-export class BalanceRepository extends BaseRepository<balance> {
-    find(item: balance): Promise<balance[]> {
+export class BalanceRepository extends BaseRepository<Balance> {
+    find(item: Balance): Promise<Balance[]> {
         throw new Error("Method not implemented.");
     }
-    findOne(id: string): Promise<balance> {
+    findOne(id: string): Promise<Balance> {
         throw new Error("Method not implemented.");
     }
 
