@@ -1,6 +1,8 @@
 import { BaseRepository } from "./BaseRepository ";
 import { user } from "../models/user";
+import { injectable } from "inversify";
 
+@injectable()
 export class UserRepository extends BaseRepository<user> {
   constructor() {
     super();

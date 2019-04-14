@@ -1,5 +1,5 @@
 import App from "./app";
-import { container } from "./inversify";
+import { container } from "./inversify.config";
 import { TYPES } from "./inversify.types";
 import IController from "./routes/IController";
 import { IWebServer } from "./webserver/IWebServer";
