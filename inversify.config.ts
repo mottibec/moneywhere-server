@@ -12,6 +12,8 @@ import ExpressWebServer from "./webserver/ExpressWebServer";
 import IController from "./routes/IController";
 import UserController from "./routes/users";
 import TransactionController from "./routes/transactions";
+import { TransactionRepository } from "./database/TransactionRepository";
+import { UserRepository } from "./database/UserRepository";
 
 
 const container = new Container();
@@ -20,6 +22,12 @@ const container = new Container();
 container.bind<IWebServer>(TYPES.IWebServer)
     .to(ExpressWebServer)
     .inSingletonScope();
+
+//repo
+container.bind<TransactionRepository>(TYPES.TransactionRepository)
+    .to(TransactionRepository)
+container.bind<UserRepository>(TYPES.UserRepository)
+    .to(UserRepository)
 
 //services
 container.bind<ITransactionService>(TYPES.ITransactionService)
