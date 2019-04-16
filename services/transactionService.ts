@@ -9,7 +9,7 @@ export default class TransactionService implements ITransactionService {
     private _transactionRepository!: TransactionRepository;
 
     GetAll() {
-        return this._transactionRepository._items;
+        return this._transactionRepository.getAll();
     }
 
     async getUserTransactions(userId: string) {

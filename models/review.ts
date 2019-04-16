@@ -11,7 +11,7 @@ export class Review implements IReview {
     text: string;
     rating: string;
 
-    constructor(reviewdUserId: string, createdById: string, text: string, rating: string) {
+    constructor(text: string, rating: string, reviewdUserId: string, createdById: string) {
         this.text = text;
         this.rating = rating;
         this.reviewdUserId = reviewdUserId;

@@ -1,5 +1,3 @@
-import { throws } from "assert";
-
 interface ILocation {
     longitude: number;
     latitude: number;
@@ -9,9 +7,9 @@ class Location implements ILocation {
     longitude: number;
     latitude: number;
 
-    constructor(longitude: number, latitude: number) {
-        this.longitude = longitude;
+    constructor(latitude: number, longitude: number) {
         this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     distanceFrom(location: Location): number {

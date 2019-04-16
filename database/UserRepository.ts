@@ -22,6 +22,9 @@ export class UserRepository extends BaseRepository<User> {
       new User("nave", "", "13")
     ];
   }
+  update(item: User): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
   find(item: User): Promise<User[]> {
     return Promise.resolve(this._items);
   }
