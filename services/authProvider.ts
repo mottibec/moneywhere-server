@@ -7,7 +7,6 @@ import { Strategy as jwtStrategy, ExtractJwt } from "passport-jwt";
 import config from "../config/config";
 import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
-import { response } from "express";
 
 export interface IAuthProvider {
     register(webServer: IWebServer): void;
@@ -28,13 +27,14 @@ class JWTService {
         return token;
     }
     authCallback() {
-        console.log("authCallback");
         return () => passport.authenticate('jwt', { session: false })
     }
 }
 
 @injectable()
 export class LocalAuthProvider implements IAuthProvider {
+    jwtService: JWTService = new JWTService();
+
     register(webServer: IWebServer): void {
         passport.use("local", new LocalStrategy({
             usernameField: 'email',
@@ -42,17 +42,15 @@ export class LocalAuthProvider implements IAuthProvider {
             session: false
         }, this.verifyUser));
 
-        webServer.registerPost('/auth/login', (req: any, res: any, next: any) => passport.authenticate("local", { session: false }, (err, user, info) => {
-            console.log("user", user);
-            console.log("err", err);
-            console.log("info", info);
-            return res.json(user);
-        })(req, res, next)
+        webServer.registerPost('/auth/login', (req: any, res: any, next: any) =>
+            passport.authenticate("local", { session: false }, (err, user, info) => {
+                const token = this.jwtService.sign(user);
+                return res.json(token);
+            })(req, res, next)
         );
+        this.jwtService.register();
     }
     verifyUser(userName: string, password: string, callback: Function) {
-        console.log("userName", userName);
-        console.log("password", password);
         return callback(null, { id: userName });
     }
 }
@@ -71,7 +69,7 @@ export class GoogleAuthProvider implements IAuthProvider {
         webServer.registerGet('/auth/google/callback', passport.authenticate("google"))
     }
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-        console.log("profile", profile);
+
         return done(null, profile);
     }
 
@@ -89,7 +87,6 @@ export class FacebookAuthProvider implements IAuthProvider {
     }
 
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-        console.log("profile", profile);
         return done(null, profile);
     }
 
