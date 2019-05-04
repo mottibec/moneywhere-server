@@ -1,5 +1,4 @@
 export default class AuthService {
-    authenticate(){
-
+    authenticate() {
     }
 }

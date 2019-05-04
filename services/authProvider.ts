@@ -7,9 +7,11 @@ import { Strategy as jwtStrategy, ExtractJwt } from "passport-jwt";
 import config from "../config/config";
 import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
+import { IRequest, IResponse } from "../webserver/IWebRequest";
 
 export interface IAuthProvider {
     register(webServer: IWebServer): void;
+    verifyUser(...arg: any): void;
 }
 
 class JWTService {
@@ -69,25 +71,33 @@ export class GoogleAuthProvider implements IAuthProvider {
         webServer.registerGet('/auth/google/callback', passport.authenticate("google"))
     }
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-
         return done(null, profile);
     }
-
 }
 
 @injectable()
 export class FacebookAuthProvider implements IAuthProvider {
+    jwtService: JWTService = new JWTService();
+    
     register(webServer: IWebServer): void {
         passport.use(new FacebookTokenStrategy({
             clientID: config.oAuth.facebook.appId,
             clientSecret: config.oAuth.facebook.secret
         },
             this.verifyUser));
-        webServer.registerPost('/auth/facebook', passport.authenticate('facebook-token'));
+        webServer.registerPost('/auth/facebook', (request: IRequest, response: IResponse) =>
+            passport.authenticate('facebook-token', (error, user, info) => {
+                const token = this.jwtService.sign(user);
+                return response.json(token);
+            })(request, response));
     }
 
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-        return done(null, profile);
+        console.log("accessToken", accessToken);
+        console.log("refreshToken", refreshToken);
+        console.log("profile", profile);
+        console.log("done", done);
+        return done(null, { id: profile.id });
     }
 
 }
