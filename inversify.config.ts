@@ -15,6 +15,8 @@ import TransactionController from "./routes/transactions";
 import { TransactionRepository } from "./database/TransactionRepository";
 import { UserRepository } from "./database/UserRepository";
 import { UserService } from "./services/userService";
+import authenticationController from "./routes/authentication";
+import { IAuthProvider, FacebookAuthProvider, GoogleAuthProvider, LocalAuthProvider } from "./services/authProvider";
 
 
 const container = new Container();
@@ -42,12 +44,20 @@ container.bind<UserService>(TYPES.UserService)
 container.bind<TransactionService>(TYPES.TransactionService)
     .to(TransactionService);
 
+//auth providers
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(LocalAuthProvider);
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(GoogleAuthProvider);
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(FacebookAuthProvider);
+
 //controllers
 container.bind<IController>(TYPES.IController)
     .to(UserController);
-
 container.bind<IController>(TYPES.IController)
-    .to(TransactionController)
-
+    .to(TransactionController);
+container.bind<IController>(TYPES.IController)
+    .to(authenticationController);
 
 export { container };  

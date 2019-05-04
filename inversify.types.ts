@@ -4,6 +4,7 @@ const TYPES = {
     IUserLocationService: Symbol.for("IUserLocationService"),
     IWebServer: Symbol.for("IWebServer"),
     IController: Symbol.for("IController"),
+    IAuthProvider: Symbol.for("IAuthProvider"),
     TransactionController: Symbol.for("TransactionController"),
     UserController: Symbol.for("UserController"),
     TransactionRepository: Symbol.for("TransactionRepository"),
