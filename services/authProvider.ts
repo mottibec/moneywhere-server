@@ -70,13 +70,15 @@ export class FacebookAuthProvider implements IAuthProvider {
             clientSecret: config.oAuth.facebook.secret
         },
             this.verifyUser));
-        webServer.registerPost(`/${route}/facebook`, (request: IRequest, response: IResponse) =>
+        webServer.registerPost(`${route}/facebook`, (request: IRequest, response: IResponse) =>
             passport.authenticate('facebook-token', (error, user, info) => {
                 const token = this._jwtService.sign(user);
                 return response.json(token);
-            })(request, response));
+            })(request, response)
+        );
     }
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
+        console.log(profile);
         return done(null, { id: profile.id });
     }
 }
