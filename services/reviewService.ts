@@ -14,7 +14,9 @@ export class ReviewService {
     }
     async calculateUserRating(review: Review): Promise<void> {
         const user = await this._userService.getUser(review.reviewdUserId);
-        var rating = +review.rating * user.rating;
+        if (user) {
+            var rating = +review.rating * user.rating;
+        }
     }
 
 }

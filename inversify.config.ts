@@ -17,6 +17,7 @@ import { UserRepository } from "./database/UserRepository";
 import { UserService } from "./services/userService";
 import authenticationController from "./routes/authentication";
 import { IAuthProvider, FacebookAuthProvider, GoogleAuthProvider, LocalAuthProvider } from "./services/authProvider";
+import JWTService from "./services/jwtService";
 
 
 const container = new Container();
@@ -31,6 +32,7 @@ container.bind<TransactionRepository>(TYPES.TransactionRepository)
     .to(TransactionRepository)
 container.bind<UserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
 
 //services
 container.bind<ITransactionService>(TYPES.ITransactionService)
@@ -43,6 +45,9 @@ container.bind<UserService>(TYPES.UserService)
     .to(UserService);
 container.bind<TransactionService>(TYPES.TransactionService)
     .to(TransactionService);
+
+container.bind<JWTService>(TYPES.JWTService)
+    .to(JWTService);
 
 //auth providers
 container.bind<IAuthProvider>(TYPES.IAuthProvider)

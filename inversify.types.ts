@@ -11,7 +11,8 @@ const TYPES = {
     UserRepository: Symbol.for("UserRepository"),
     UserLocationService: Symbol.for("UserLocationService"),
     UserService: Symbol.for("UserService"),
-    TransactionService: Symbol.for("TransactionService")
+    TransactionService: Symbol.for("TransactionService"),
+    JWTService: Symbol.for("JWTService")
 
 };
 

@@ -25,12 +25,18 @@ export default class UserController implements IController {
     private _transactionService!: ITransactionService;
 
     initRoutes() {
-        this._webServer.registerGet(this.route, (request: IRequest, response: IResponse) => this.getUsers(request, response));
-        this._webServer.registerGet(`${this.route}/:id`, (request: IRequest, response: IResponse) => this.getUser(request, response));
-        this._webServer.registerGet(`${this.route}/location/:location`, (request: IRequest, response: IResponse) => this.getUsersByLocation(request, response));
-        this._webServer.registerPost(this.route, (request: IRequest, response: IResponse) => this.createUser(request, response));
-        this._webServer.registerPost(`${this.route}/:id/rate`, (request: IRequest, response: IResponse) => this.rateUser(request, response));
-        this._webServer.registerPost(`${this.route}/ping`, (request: IRequest, response: IResponse) => this.pingUser(request, response));
+        this._webServer.registerGet(this.route, (request: IRequest, response: IResponse) =>
+            this.getUsers(request, response));
+        this._webServer.registerGet(`${this.route}/:id`, (request: IRequest, response: IResponse) =>
+            this.getUser(request, response));
+        this._webServer.registerGet(`${this.route}/location/:location`, (request: IRequest, response: IResponse) =>
+            this.getUsersByLocation(request, response));
+        this._webServer.registerPost(this.route, (request: IRequest, response: IResponse) =>
+            this.createUser(request, response));
+        this._webServer.registerPost(`${this.route}/:id/rate`, (request: IRequest, response: IResponse) =>
+            this.rateUser(request, response));
+        this._webServer.registerPost(`${this.route}/ping`, (request: IRequest, response: IResponse) =>
+            this.pingUser(request, response));
     }
     async getUsers(request: IRequest, response: IResponse) {
         let result = await this._userService.getAllUsers();

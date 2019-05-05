@@ -28,10 +28,17 @@ export class UserRepository extends BaseRepository<User> {
   find(item: User): Promise<User[]> {
     return Promise.resolve(this._items);
   }
-  findOne(id: string): Promise<User> {
+  findBy(prop: string, value: string): Promise<User | null> {
+    const user = this._items.find(user => user[prop] == value);
+    if (!user) {
+      return Promise.resolve(null);
+    }
+    return Promise.resolve(user);
+  }
+  findOne(id: string): Promise<User | null> {
     const user = this._items.find(user => user.id === id);
     if (!user) {
-      return Promise.reject();
+      return Promise.resolve(null);
     }
     return Promise.resolve(user);
   }

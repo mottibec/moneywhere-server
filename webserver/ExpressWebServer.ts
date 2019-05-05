@@ -25,7 +25,8 @@ export default class ExpressWebServer implements IWebServer {
     }
 
     public registerGet(routeTemplate: string, callback: Function): void {
-        this._router.get(routeTemplate, (request: Request, response: Response) => callback(request, response));
+        this._router.get(routeTemplate, (request: Request, response: Response) =>
+            callback(request, response));
     }
 
     public registerPost(routeTemplate: string, callback: Function): void {
@@ -35,9 +36,11 @@ export default class ExpressWebServer implements IWebServer {
     }
 
     registerProtectedGet(routeTemplate: string, callback: Function): void {
-        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) => callback(request, response));
+        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) =>
+            callback(request, response));
     }
     registerProtectedPost(routeTemplate: string, callback: Function): void {
-        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) => callback(request, response));
+        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) =>
+            callback(request, response));
     }
 }
