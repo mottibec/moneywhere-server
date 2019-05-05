@@ -10,10 +10,7 @@ export abstract class BaseRepository<T> implements IRepository<T>  {
         return this._items;
     }
     create(item: T): Promise<boolean> {
-        console.log(item);
-        console.log("before adding", this._items.length);
         this._items.push(item);
-        console.log("after adding", this._items.length);
         return Promise.resolve(true);
     }
     abstract update(item: T): Promise<boolean>;
