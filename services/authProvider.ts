@@ -8,6 +8,8 @@ import { injectable, inject } from "inversify";
 import { IRequest, IResponse } from "../webserver/IWebRequest";
 import JWTService from "./jwtService";
 import { TYPES } from "../inversify.types";
+import { UserService } from "./userService";
+import { User } from "../models/user";
 
 export interface IAuthProvider {
     register(webServer: IWebServer, route: string): void;
@@ -64,12 +66,15 @@ export class FacebookAuthProvider implements IAuthProvider {
     @inject(TYPES.JWTService)
     private _jwtService!: JWTService;
 
+    @inject(TYPES.UserService)
+    private _userService!: UserService;
+
     register(webServer: IWebServer, route: string): void {
         passport.use(new FacebookTokenStrategy({
             clientID: config.oAuth.facebook.appId,
             clientSecret: config.oAuth.facebook.secret
         },
-            this.verifyUser));
+            (...args) => this.verifyUser(...args)));
         webServer.registerPost(`${route}/facebook`, (request: IRequest, response: IResponse) =>
             passport.authenticate('facebook-token', (error, user, info) => {
                 const token = this._jwtService.sign(user);
@@ -78,7 +83,13 @@ export class FacebookAuthProvider implements IAuthProvider {
         );
     }
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-        console.log(profile);
-        return done(null, { id: profile.id });
+        const user = await this._userService.getUser(profile.id);
+        if (user) {
+            return done(null, { id: profile.id });
+        }
+        const newUser = new User(profile.name, profile.email, profile.id);
+        await this._userService.createUser(newUser);
+
+        return done(null, { id: newUser.id });
     }
 }
