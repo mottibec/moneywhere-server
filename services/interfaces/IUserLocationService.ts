@@ -1,7 +1,6 @@
-import { user } from "../../models/user";
-import { location } from "../../models/location";
+import { User } from "../../models/user";
+import { Location } from "../../models/location";
 
 export interface IUserLocationService {
-    getUsersByLocation(location: location, radius: number): user[];
-
+    getUsersByLocation(location: Location, radius: number): User[];
 }

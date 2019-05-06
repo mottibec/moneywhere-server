@@ -5,6 +5,7 @@ interface IRequest {
 }
 
 interface IResponse {
+    json(item: any): void;
     status(resultCode: number): void;
     send(item: any): void;
 }

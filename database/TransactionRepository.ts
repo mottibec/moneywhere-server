@@ -16,6 +16,9 @@ export class TransactionRepository extends BaseRepository<transaction> {
                 amount: 100,
             }];
     }
+    update(item: transaction): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
     find(item: transaction): Promise<transaction[]> {
         return Promise.resolve(this._items);
     }

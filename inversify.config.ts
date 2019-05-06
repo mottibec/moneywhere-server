@@ -14,6 +14,10 @@ import UserController from "./routes/users";
 import TransactionController from "./routes/transactions";
 import { TransactionRepository } from "./database/TransactionRepository";
 import { UserRepository } from "./database/UserRepository";
+import { UserService } from "./services/userService";
+import authenticationController from "./routes/authentication";
+import { IAuthProvider, FacebookAuthProvider, GoogleAuthProvider, LocalAuthProvider } from "./services/authProvider";
+import JWTService from "./services/jwtService";
 
 
 const container = new Container();
@@ -28,6 +32,7 @@ container.bind<TransactionRepository>(TYPES.TransactionRepository)
     .to(TransactionRepository)
 container.bind<UserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
 
 //services
 container.bind<ITransactionService>(TYPES.ITransactionService)
@@ -36,13 +41,28 @@ container.bind<ILiveLocation>(TYPES.ILiveLocation)
     .to(LiveLocationService);
 container.bind<IUserLocationService>(TYPES.IUserLocationService)
     .to(UserLocationService);
+container.bind<UserService>(TYPES.UserService)
+    .to(UserService);
+container.bind<TransactionService>(TYPES.TransactionService)
+    .to(TransactionService);
+
+container.bind<JWTService>(TYPES.JWTService)
+    .to(JWTService);
+
+//auth providers
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(LocalAuthProvider);
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(GoogleAuthProvider);
+container.bind<IAuthProvider>(TYPES.IAuthProvider)
+    .to(FacebookAuthProvider);
 
 //controllers
 container.bind<IController>(TYPES.IController)
     .to(UserController);
-
 container.bind<IController>(TYPES.IController)
-    .to(TransactionController)
-
+    .to(TransactionController);
+container.bind<IController>(TYPES.IController)
+    .to(authenticationController);
 
 export { container };  
