@@ -72,11 +72,12 @@ export class FacebookAuthProvider implements IAuthProvider {
     register(webServer: IWebServer, route: string): void {
         passport.use(new FacebookTokenStrategy({
             clientID: config.oAuth.facebook.appId,
-            clientSecret: config.oAuth.facebook.secret
+            clientSecret: config.oAuth.facebook.secret,
+            profileFields: ['id', 'email', 'gender', 'locale', 'name', 'displayName'],
         },
             (...args) => this.verifyUser(...args)));
         webServer.registerPost(`${route}/facebook`, (request: IRequest, response: IResponse) =>
-            passport.authenticate('facebook-token', (error, user, info) => {
+            passport.authenticate('facebook-token', { scope: ['email'] }, (error, user, info) => {
                 const token = this._jwtService.sign(user);
                 return response.json(token);
             })(request, response)
@@ -85,9 +86,15 @@ export class FacebookAuthProvider implements IAuthProvider {
     async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
         const user = await this._userService.getUser(profile.id);
         if (user) {
-            return done(null, { id: profile.id });
+            return done(null, { id: user.id });
         }
-        const newUser = new User(profile.name, profile.email, profile.id);
+        const emails = profile.emails as { value: string }[];
+
+        const newUser = new User(profile.displayName, emails[0].value, profile.id);
+
+        newUser.authToken = accessToken;
+        newUser.authRefreshToken = refreshToken;
+
         await this._userService.createUser(newUser);
 
         return done(null, { id: newUser.id });

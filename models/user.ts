@@ -13,7 +13,15 @@ interface IUser {
     gender: gender;
     dob: Date,
     countryCode: string,
-    mainCurrencyCode: string
+    mainCurrencyCode: string,
+    authProvider?: authProvider
+    authToken: string,
+    authRefreshToken: string
+}
+enum authProvider {
+    facebook,
+    google,
+    local
 }
 
 enum gender {
@@ -23,8 +31,10 @@ enum gender {
 }
 
 class User implements IUser {
-    [k: string]: any;
-    password?: string | undefined;
+    authProvider!: authProvider;
+    authToken!: string;
+    authRefreshToken!: string;
+    password!: string;
     dob!: Date;
     countryCode!: string;
     mainCurrencyCode!: string;
@@ -36,6 +46,8 @@ class User implements IUser {
     rating!: number;
     location!: Location;
     gender!: gender;
+
+    [k: string]: any;
 
     constructor(name: string, email: string, id?: string) {
         this.name = name;
