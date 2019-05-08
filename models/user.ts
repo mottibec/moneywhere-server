@@ -16,7 +16,7 @@ interface IUser {
     mainCurrencyCode: string,
     authProvider?: authProvider
     authToken: string,
-    authRefreshToken: string
+    authRefreshToken: string;
 }
 enum authProvider {
     facebook,
