@@ -5,9 +5,9 @@ interface IRequest {
 }
 
 interface IResponse {
-    json(item: any): void;
-    status(resultCode: number): void;
-    send(item: any): void;
+    json(item: any): any;
+    status(resultCode: number): any;
+    send(item: any): any;
 }
 
 export { IRequest, IResponse };
