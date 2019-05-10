@@ -29,7 +29,6 @@ export class TransactionRepository extends BaseRepository<transaction> {
         }
         return Promise.resolve(transaction);
     }
-
     findByUser(userId: string): Promise<transaction[]> {
         const items = this._items.filter(item => item.fromUser === userId || item.toUser === userId);
         console.log(items);

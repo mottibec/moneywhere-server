@@ -1,7 +1,6 @@
 import { IRepository } from "./IRepository";
 import { injectable } from "inversify";
 
-
 @injectable()
 export abstract class BaseRepository<T> implements IRepository<T>  {
     protected _items: T[] = [];
