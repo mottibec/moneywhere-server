@@ -1,7 +1,7 @@
 interface IRequest {
     params: any;
     body: any;
-
+    user?: any;
 }
 
 interface IResponse {
