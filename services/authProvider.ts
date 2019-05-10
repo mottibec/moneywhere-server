@@ -22,24 +22,42 @@ export class LocalAuthProvider implements IAuthProvider {
     @inject(TYPES.JWTService)
     private _jwtService!: JWTService;
 
+    @inject(TYPES.UserService)
+    private _userService!: UserService;
+
     register(webServer: IWebServer, route: string): void {
-        passport.use("local", new LocalStrategy({
+        passport.use(new LocalStrategy({
             usernameField: 'email',
             passwordField: 'password',
             session: false
-        }, this.verifyUser));
+        }, (...args) => this.verifyUser(...args)));
 
-        webServer.registerPost(`${route}/login`, (req: any, res: any, next: any) =>
+        webServer.registerPost(`${route}/login`, (request: any, response: any, next: any) =>
             passport.authenticate("local", { session: false }, (err, user, info) => {
+                if (err || !user) {
+                    return response
+                        .status(400)
+                        .json({
+                            error: err,
+                            user: user,
+                            info: info
+                        });
+                }
                 const token = this._jwtService.sign(user);
-                return res.json(token);
-            })(req, res, next)
+                return response.json(token);
+            })(request, response, next)
         );
         this._jwtService.register();
     }
-    verifyUser(userName: string, password: string, callback: Function) {
+    async verifyUser(userName: string, password: string, callback: Function) {
         console.log("userName", userName);
-        return callback(null, { id: userName });
+        console.log("password", password);
+        const user = await this._userService.findByEmail(userName);
+        if (!user) {
+            return callback(null, false);
+        }
+        return callback(null, { id: user.id });
+
     }
 }
 

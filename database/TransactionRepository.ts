@@ -1,9 +1,9 @@
-import { BaseRepository } from "./BaseRepository ";
+import { BaseMemoryRepository } from "./BaseMemoryRepository";
 import { transaction } from "../models/transaction";
 import { injectable } from "inversify";
 
 @injectable()
-export class TransactionRepository extends BaseRepository<transaction> {
+export class TransactionRepository extends BaseMemoryRepository<transaction> {
     constructor() {
         super();
         this._items = [

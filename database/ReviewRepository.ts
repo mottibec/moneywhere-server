@@ -1,7 +1,7 @@
-import { BaseRepository } from "./BaseRepository ";
+import { BaseMemoryRepository } from "./BaseMemoryRepository";
 import { Review } from "../models/review";
 
-export class ReviewRepository extends BaseRepository<Review>
+export class ReviewRepository extends BaseMemoryRepository<Review>
 {
     update(item: Review): Promise<boolean> {
         throw new Error("Method not implemented.");

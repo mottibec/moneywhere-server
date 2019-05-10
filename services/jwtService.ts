@@ -17,6 +17,7 @@ export default class JWTService {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: config.jwtSecret
         }, async (jwtPayload: any, callback: Function) => {
+            console.log("jwtPayload", jwtPayload);
             const user = await this._userService.getUser(jwtPayload.id);
             if (user) {
                 return callback(null, user);
