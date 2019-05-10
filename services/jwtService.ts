@@ -30,4 +30,7 @@ export default class JWTService {
         const token = jwt.sign(item, config.jwtSecret);
         return token;
     }
+    verifyToken() {
+        return passport.authenticate('jwt', { session: false });
+    }
 }

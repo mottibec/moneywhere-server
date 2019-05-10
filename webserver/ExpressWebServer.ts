@@ -1,9 +1,11 @@
 import { IWebServer } from "./IWebServer";
 import { Request, Response, Router, Application } from "express";
 import express from "express";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import passport from "passport";
 import bodyparser from "body-parser";
+import JWTService from "../services/jwtService";
+import { TYPES } from "../inversify.types";
 
 
 @injectable()
@@ -11,6 +13,9 @@ export default class ExpressWebServer implements IWebServer {
 
     private _router: Router;
     private _app: Application;
+
+    @inject(TYPES.JWTService)
+    private _jwtService!: JWTService;
 
     constructor() {
         this._app = express();
@@ -36,11 +41,11 @@ export default class ExpressWebServer implements IWebServer {
     }
 
     registerProtectedGet(routeTemplate: string, callback: Function): void {
-        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) =>
+        this._router.get(routeTemplate, this._jwtService.verifyToken(), (request: Request, response: Response) =>
             callback(request, response));
     }
     registerProtectedPost(routeTemplate: string, callback: Function): void {
-        this._router.get(routeTemplate, passport.authenticate('jwt', { session: false }), (request: Request, response: Response) =>
+        this._router.get(routeTemplate, this._jwtService.verifyToken(), (request: Request, response: Response) =>
             callback(request, response));
     }
 }

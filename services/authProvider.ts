@@ -44,14 +44,12 @@ export class LocalAuthProvider implements IAuthProvider {
                         });
                 }
                 const token = this._jwtService.sign(user);
-                return response.json(token);
+                return response.json({ access_token: token });
             })(request, response, next)
         );
         this._jwtService.register();
     }
     async verifyUser(userName: string, password: string, callback: Function) {
-        console.log("userName", userName);
-        console.log("password", password);
         const user = await this._userService.findByEmail(userName);
         if (!user) {
             return callback(null, false);
@@ -98,7 +96,7 @@ export class FacebookAuthProvider implements IAuthProvider {
         webServer.registerPost(`${route}/facebook`, (request: IRequest, response: IResponse) =>
             passport.authenticate('facebook-token', { scope: ['email'] }, (error, user, info) => {
                 const token = this._jwtService.sign(user);
-                return response.json(token);
+                return response.json({ access_token: token });
             })(request, response)
         );
     }
