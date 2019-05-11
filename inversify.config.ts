@@ -18,6 +18,7 @@ import { UserService } from "./services/userService";
 import authenticationController from "./routes/authentication";
 import { IAuthProvider, FacebookAuthProvider, GoogleAuthProvider, LocalAuthProvider } from "./services/authProvider";
 import JWTService from "./services/jwtService";
+import AuthService from "./services/authService";
 
 
 const container = new Container();
@@ -45,6 +46,8 @@ container.bind<UserService>(TYPES.UserService)
     .to(UserService);
 container.bind<TransactionService>(TYPES.TransactionService)
     .to(TransactionService);
+container.bind<AuthService>(TYPES.AuthService)
+    .to(AuthService);
 
 container.bind<JWTService>(TYPES.JWTService)
     .to(JWTService);

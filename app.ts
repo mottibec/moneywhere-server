@@ -9,14 +9,13 @@ class App {
         this.configRoutes(controllers);
     }
     configRoutes(controllers: IController[]) {
-        controllers.forEach((controller) => {
+        controllers.forEach(controller => {
             controller.initRoutes();
             console.log(`'${controller.route}' registered`);
         });
     }
     public start(port: number) {
         this._webServer.start(port, () => `app is listing on port ${port}`);
-        console.log("done");
     }
 }
 

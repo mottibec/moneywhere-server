@@ -1,7 +1,7 @@
-import { BaseRepository } from "./BaseRepository ";
+import { BaseMemoryRepository } from "./BaseMemoryRepository";
 import { userPreference } from "../models/userPreference";
 
-export class UserPreferencesRepository extends BaseRepository<userPreference> {
+export class UserPreferencesRepository extends BaseMemoryRepository<userPreference> {
     update(item: userPreference): Promise<boolean> {
         return Promise.resolve(true);
     }

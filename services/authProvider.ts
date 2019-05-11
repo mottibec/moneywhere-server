@@ -10,6 +10,7 @@ import JWTService from "./jwtService";
 import { TYPES } from "../inversify.types";
 import { UserService } from "./userService";
 import { User } from "../models/user";
+import AuthService from "./authService";
 
 export interface IAuthProvider {
     register(webServer: IWebServer, route: string): void;
@@ -22,24 +23,47 @@ export class LocalAuthProvider implements IAuthProvider {
     @inject(TYPES.JWTService)
     private _jwtService!: JWTService;
 
+    @inject(TYPES.UserService)
+    private _userService!: UserService;
+
+    @inject(TYPES.AuthService)
+    private _authService!: AuthService;
+
     register(webServer: IWebServer, route: string): void {
-        passport.use("local", new LocalStrategy({
+        passport.use(new LocalStrategy({
             usernameField: 'email',
             passwordField: 'password',
             session: false
-        }, this.verifyUser));
+        }, async (...args) => this.verifyUser(...args)));
 
-        webServer.registerPost(`${route}/login`, (req: any, res: any, next: any) =>
+        webServer.registerPost(`${route}/login`, (request: any, response: any, next: any) =>
             passport.authenticate("local", { session: false }, (err, user, info) => {
+                if (err || !user) {
+                    return response
+                        .status(400)
+                        .json({
+                            error: err,
+                            user: user,
+                            info: info
+                        });
+                }
                 const token = this._jwtService.sign(user);
-                return res.json(token);
-            })(req, res, next)
+                return response.json({ access_token: token });
+            })(request, response, next)
         );
         this._jwtService.register();
     }
-    verifyUser(userName: string, password: string, callback: Function) {
-        console.log("userName", userName);
-        return callback(null, { id: userName });
+    async verifyUser(userName: string, password: string, callback: Function) {
+        const user = await this._userService.findByEmail(userName);
+        if (!user) {
+            return callback(null, false, "invalid user name or password");
+        }
+        const doseMatch = await this._authService.verifyHash(password, user.password);
+        if (!doseMatch) {
+            return callback(null, false, "invalid user name or password");
+        }
+        return callback(null, { id: user.id });
+
     }
 }
 
@@ -80,7 +104,7 @@ export class FacebookAuthProvider implements IAuthProvider {
         webServer.registerPost(`${route}/facebook`, (request: IRequest, response: IResponse) =>
             passport.authenticate('facebook-token', { scope: ['email'] }, (error, user, info) => {
                 const token = this._jwtService.sign(user);
-                return response.json(token);
+                return response.json({ access_token: token });
             })(request, response)
         );
     }
