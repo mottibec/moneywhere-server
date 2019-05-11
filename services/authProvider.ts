@@ -10,6 +10,7 @@ import JWTService from "./jwtService";
 import { TYPES } from "../inversify.types";
 import { UserService } from "./userService";
 import { User } from "../models/user";
+import AuthService from "./authService";
 
 export interface IAuthProvider {
     register(webServer: IWebServer, route: string): void;
@@ -25,12 +26,15 @@ export class LocalAuthProvider implements IAuthProvider {
     @inject(TYPES.UserService)
     private _userService!: UserService;
 
+    @inject(TYPES.AuthService)
+    private _authService!: AuthService;
+
     register(webServer: IWebServer, route: string): void {
         passport.use(new LocalStrategy({
             usernameField: 'email',
             passwordField: 'password',
             session: false
-        }, (...args) => this.verifyUser(...args)));
+        }, async (...args) => this.verifyUser(...args)));
 
         webServer.registerPost(`${route}/login`, (request: any, response: any, next: any) =>
             passport.authenticate("local", { session: false }, (err, user, info) => {
@@ -52,7 +56,11 @@ export class LocalAuthProvider implements IAuthProvider {
     async verifyUser(userName: string, password: string, callback: Function) {
         const user = await this._userService.findByEmail(userName);
         if (!user) {
-            return callback(null, false);
+            return callback(null, false, "invalid user name or password");
+        }
+        const doseMatch = await this._authService.verifyHash(password, user.password);
+        if (!doseMatch) {
+            return callback(null, false, "invalid user name or password");
         }
         return callback(null, { id: user.id });
 
