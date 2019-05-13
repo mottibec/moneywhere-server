@@ -73,7 +73,7 @@ export class GoogleAuthProvider implements IAuthProvider {
         passport.use(new GoogleStrategy({
             clientID: config.oAuth.google.appId,
             clientSecret: config.oAuth.google.secret,
-            callbackURL: `${config.rootSericeUrl}/auth/google/callback`
+            callbackURL: `${config.rootServiceUrl}/auth/google/callback`
         },
             this.verifyUser));
 
