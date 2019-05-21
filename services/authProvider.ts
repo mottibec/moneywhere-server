@@ -1,6 +1,6 @@
 import { IWebServer } from "../webserver/IWebServer";
 import passport from "passport";
-import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
+import { OAuth2Client as GoogleStrategy } from "google-auth-library";
 import FacebookTokenStrategy from "passport-facebook-token";
 import { Strategy as LocalStrategy } from "passport-local";
 import config from "../config/config";
@@ -69,19 +69,49 @@ export class LocalAuthProvider implements IAuthProvider {
 
 @injectable()
 export class GoogleAuthProvider implements IAuthProvider {
-    register(webServer: IWebServer, route: string): void {
-        passport.use(new GoogleStrategy({
-            clientID: config.oAuth.google.appId,
-            clientSecret: config.oAuth.google.secret,
-            callbackURL: `${config.rootSericeUrl}/auth/google/callback`
-        },
-            this.verifyUser));
 
-        webServer.registerGet(`/${route}/google`, passport.authenticate("google", { scope: ['https://www.googleapis.com/auth/plus.login'] }))
-        webServer.registerGet(`/${route}/google/callback`, passport.authenticate("google"))
+    private _googleStrategy!: GoogleStrategy;
+
+    @inject(TYPES.UserService)
+    private _userService!: UserService;
+
+    @inject(TYPES.JWTService)
+    private _jwtService!: JWTService;
+
+    register(webServer: IWebServer, route: string): void {
+        console.log("register GoogleAuthProvider");
+        this._googleStrategy = new GoogleStrategy("506966885004-k93sduvcbceaaftt511dq7u3j0utep00.apps.googleusercontent.com");
+
+        webServer.registerPost(`${route}/google`, async (request: IRequest, response: IResponse) =>
+            await this.verifyUser(request, response));
     }
-    async verifyUser(accessToken: string, refreshToken: string, profile: any, done: Function) {
-        return done(null, profile);
+    async verifyUser(request: IRequest, response: IResponse) {
+        const idToken = request.body.id_token;
+
+        const profileInfo = await this._googleStrategy.verifyIdToken({
+            idToken: idToken,
+            audience: "506966885004-k93sduvcbceaaftt511dq7u3j0utep00.apps.googleusercontent.com"
+        });
+
+        const paylod = profileInfo.getPayload();
+
+        if (paylod && paylod.email_verified && paylod.email) {
+            let user = await this._userService.findByEmail(paylod.email);
+            if (!user) {
+                const name = paylod.given_name || paylod.family_name || paylod.email;
+                user = new User(name, paylod.email);
+
+                user.authToken = idToken;
+                //newUser.authRefreshToken = refreshToken;
+
+                await this._userService.createUser(user);
+            }
+            const token = this._jwtService.sign({ id: user.id });
+            return response.json({ access_token: token });
+        }
+        else {
+
+        }
     }
 }
 
