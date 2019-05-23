@@ -38,7 +38,11 @@ export default class authenticationController implements IController {
         const signUpData = request.body;
         const savedUser = await this._userService.findByEmail(signUpData.email);
         if (savedUser) {
-            return response.status(400);
+            return response
+                .status(400)
+                .json({
+                    error: "The email address you have entered is already registered"
+                });
         }
 
         let user = await this.createUser(signUpData);
