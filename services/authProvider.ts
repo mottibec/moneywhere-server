@@ -79,7 +79,6 @@ export class GoogleAuthProvider implements IAuthProvider {
     private _jwtService!: JWTService;
 
     register(webServer: IWebServer, route: string): void {
-        console.log("register GoogleAuthProvider");
         this._googleStrategy = new GoogleStrategy(config.oAuth.google.appId);
 
         webServer.registerPost(`${route}/google`, async (request: IRequest, response: IResponse) =>
@@ -87,7 +86,6 @@ export class GoogleAuthProvider implements IAuthProvider {
     }
     async verifyUser(request: IRequest, response: IResponse) {
         const idToken = request.body.id_token;
-
         const profileInfo = await this._googleStrategy.verifyIdToken({
             idToken: idToken,
             audience: config.oAuth.google.appId
@@ -100,7 +98,6 @@ export class GoogleAuthProvider implements IAuthProvider {
             if (!user) {
                 const name = paylod.given_name || paylod.family_name || paylod.email;
                 user = new User(name, paylod.email);
-
                 user.authToken = idToken;
                 user.avatar = paylod.picture || "";
                 //newUser.authRefreshToken = refreshToken;
