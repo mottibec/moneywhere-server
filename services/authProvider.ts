@@ -86,29 +86,38 @@ export class GoogleAuthProvider implements IAuthProvider {
     }
     async verifyUser(request: IRequest, response: IResponse) {
         const idToken = request.body.id_token;
-        const profileInfo = await this._googleStrategy.verifyIdToken({
-            idToken: idToken,
-            audience: config.oAuth.google.appId
-        });
+        try {
+            const profileInfo = await this._googleStrategy.verifyIdToken({
+                idToken: idToken,
+                audience: config.oAuth.google.appId
+            });
+            console.log("profileInfo", profileInfo);
+            const paylod = profileInfo.getPayload();
 
-        const paylod = profileInfo.getPayload();
-
-        if (paylod && paylod.email_verified && paylod.email) {
-            let user = await this._userService.findByEmail(paylod.email);
-            if (!user) {
-                const name = paylod.given_name || paylod.family_name || paylod.email;
-                user = new User(name, paylod.email);
-                user.authToken = idToken;
-                user.avatar = paylod.picture || "";
-                //newUser.authRefreshToken = refreshToken;
-                await this._userService.createUser(user);
+            if (paylod && paylod.email_verified && paylod.email) {
+                console.log("paylod.email", paylod.email);
+                let user = await this._userService.findByEmail(paylod.email);
+                if (!user) {
+                    const name = paylod.given_name || paylod.family_name || paylod.email;
+                    user = new User(name, paylod.email);
+                    user.authToken = idToken;
+                    user.avatar = paylod.picture || "";
+                    //newUser.authRefreshToken = refreshToken;
+                    await this._userService.createUser(user);
+                }
+                console.log(user);
+                const token = this._jwtService.sign({ id: user.id });
+                return response.json({ access_token: token });
             }
-            const token = this._jwtService.sign({ id: user.id });
-            return response.json({ access_token: token });
+            else {
+                return response.status(400);
+            }
         }
-        else {
-            return response.status(400);
+        catch (err) {
+            console.log("err", err);
+            return response.status(400).json({ error: err.message });
         }
+
     }
 }
 
