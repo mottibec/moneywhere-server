@@ -79,18 +79,16 @@ export class GoogleAuthProvider implements IAuthProvider {
     private _jwtService!: JWTService;
 
     register(webServer: IWebServer, route: string): void {
-        console.log("register GoogleAuthProvider");
-        this._googleStrategy = new GoogleStrategy("506966885004-k93sduvcbceaaftt511dq7u3j0utep00.apps.googleusercontent.com");
+        this._googleStrategy = new GoogleStrategy(config.oAuth.google.appId);
 
         webServer.registerPost(`${route}/google`, async (request: IRequest, response: IResponse) =>
             await this.verifyUser(request, response));
     }
     async verifyUser(request: IRequest, response: IResponse) {
         const idToken = request.body.id_token;
-
         const profileInfo = await this._googleStrategy.verifyIdToken({
             idToken: idToken,
-            audience: "506966885004-k93sduvcbceaaftt511dq7u3j0utep00.apps.googleusercontent.com"
+            audience: config.oAuth.google.appId
         });
 
         const paylod = profileInfo.getPayload();
@@ -100,17 +98,16 @@ export class GoogleAuthProvider implements IAuthProvider {
             if (!user) {
                 const name = paylod.given_name || paylod.family_name || paylod.email;
                 user = new User(name, paylod.email);
-
                 user.authToken = idToken;
+                user.avatar = paylod.picture || "";
                 //newUser.authRefreshToken = refreshToken;
-
                 await this._userService.createUser(user);
             }
             const token = this._jwtService.sign({ id: user.id });
             return response.json({ access_token: token });
         }
         else {
-
+            return response.status(400);
         }
     }
 }
