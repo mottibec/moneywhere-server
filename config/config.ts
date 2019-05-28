@@ -4,14 +4,12 @@ export default {
     jwtSecret: "moneywhereappsupersecret",
     oAuth: {
         facebook: {
-            appId: "419813812194601",
-            secret: "05f1c36d88060bfa35de6c452fd92dfb",
+            appId: process.env["facebookAppId"],
+            secret: process.env["facebookAppSecret"],
         },
         google: {
-            appId: "506966885004-0cgval2i0icnrbtl5tuf40qr0e1f5quf.apps.googleusercontent.com",
-            secret: "I18IFPw9_GnbngjIjsFfSOad",
-            debugId: "506966885004-is4gmttik0eo42he9hcttr75o6e9i1hg.apps.googleusercontent.com",
-            debugSecret: "YtEBNbofv9dsTPO-ToydNDwR"
+            appId:process.env["googleAppId"],
+            secret: process.env["googleAppId"]
         }
     }
 
