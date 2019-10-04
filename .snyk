@@ -24,3 +24,14 @@ patch:
         patched: '2019-07-10T21:08:55.447Z'
     - snyk > snyk-go-plugin > graphlib > lodash:
         patched: '2019-07-10T21:08:55.447Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - google-auth-library > gaxios > https-proxy-agent:
+        patched: '2019-10-04T02:02:48.742Z'
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T02:02:48.742Z'
+    - google-auth-library > gcp-metadata > gaxios > https-proxy-agent:
+        patched: '2019-10-04T02:02:48.742Z'
+    - google-auth-library > gtoken > gaxios > https-proxy-agent:
+        patched: '2019-10-04T02:02:48.742Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T02:02:48.742Z'
